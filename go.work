@@ -1,0 +1,10 @@
+go 1.23.3
+
+use (
+	./api-gateway
+	./examination-service
+	./patient-service
+	./prescription-service
+	./referral-service
+	./sample-service
+)

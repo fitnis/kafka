@@ -1,0 +1,367 @@
+openapi: 3.1.0
+info:
+  title: Medical Backend API
+  version: 1.0.0
+  description: Single API service with modular service layers
+
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+
+  ### SchedulingService
+  /appointments/schedule:
+    post:
+      summary: Schedule Appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentRequest'
+      responses:
+        '201':
+          description: Appointment scheduled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    get:
+      summary: Get Appointments
+      responses:
+        '200':
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppointmentRequest'
+
+  /appointments/schedule/{appointmentId}:
+    delete:
+      summary: Cancel Appointment
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Appointment cancelled
+
+  /orders:
+    post:
+      summary: Create Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '201':
+          description: Order created
+    get:
+      summary: Get Orders
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderRequest'
+
+  /orders/{orderId}:
+    delete:
+      summary: Delete Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Order deleted
+
+  ### PatientService
+  /patients/admit:
+    post:
+      summary: Admit Patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientRequest'
+      responses:
+        '201':
+          description: Patient admitted
+    get:
+      summary: List Admitted Patients
+      responses:
+        '200':
+          description: List
+
+  /patients/admit/{patientId}:
+    delete:
+      summary: Discharge Patient
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Patient discharged
+
+  /patients/register:
+    post:
+      summary: Register at Clinic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientRequest'
+      responses:
+        '201':
+          description: Registered
+
+  ### RecordService
+  /records/chart:
+    post:
+      summary: Record in Chart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChartNote'
+      responses:
+        '201':
+          description: Chart updated
+    get:
+      summary: Get Chart Notes
+      responses:
+        '200':
+          description: Notes retrieved
+
+  /records/exam:
+    post:
+      summary: Perform Exam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamRequest'
+      responses:
+        '201':
+          description: Exam recorded
+
+  /records/exam/results:
+    post:
+      summary: Record Exam Results
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamResult'
+      responses:
+        '201':
+          description: Results recorded
+
+  ### LabService
+  /lab/collectSample:
+    post:
+      summary: Collect Sample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sample'
+      responses:
+        '201':
+          description: Sample collected
+
+  /lab/recordSample:
+    post:
+      summary: Record Sample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sample'
+      responses:
+        '201':
+          description: Sample recorded
+
+  /lab/processSample:
+    post:
+      summary: Process Sample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sample'
+      responses:
+        '201':
+          description: Processing started
+
+  /lab/evaluateSample:
+    post:
+      summary: Evaluate Sample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SampleEvaluation'
+      responses:
+        '201':
+          description: Evaluation completed
+
+  ### PrescriptionService
+  /prescriptions/prescribe:
+    post:
+      summary: Prescribe Medication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prescription'
+      responses:
+        '201':
+          description: Medication prescribed
+
+  /prescriptions:
+    post:
+      summary: Create Prescription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prescription'
+      responses:
+        '201':
+          description: Prescription created
+
+  ### ReferralService
+  /referrals/specialist:
+    post:
+      summary: Refer to Specialist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Referral'
+      responses:
+        '201':
+          description: Referred
+
+  /referrals:
+    post:
+      summary: Create Referral Note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Referral'
+      responses:
+        '201':
+          description: Referral note created
+
+components:
+  schemas:
+    GenericResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    AppointmentRequest:
+      type: object
+      properties:
+        patientId:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        doctor:
+          type: string
+    OrderRequest:
+      type: object
+      properties:
+        patientId:
+          type: string
+        item:
+          type: string
+        priority:
+          type: string
+    PatientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        dob:
+          type: string
+        reason:
+          type: string
+    ChartNote:
+      type: object
+      properties:
+        patientId:
+          type: string
+        note:
+          type: string
+    ExamRequest:
+      type: object
+      properties:
+        patientId:
+          type: string
+        examType:
+          type: string
+    ExamResult:
+      type: object
+      properties:
+        patientId:
+          type: string
+        result:
+          type: string
+    Sample:
+      type: object
+      properties:
+        sampleId:
+          type: string
+        patientId:
+          type: string
+        type:
+          type: string
+    SampleEvaluation:
+      type: object
+      properties:
+        sampleId:
+          type: string
+        result:
+          type: string
+    Prescription:
+      type: object
+      properties:
+        patientId:
+          type: string
+        medication:
+          type: string
+        dosage:
+          type: string
+    Referral:
+      type: object
+      properties:
+        patientId:
+          type: string
+        department:
+          type: string
+        reason:
+          type: string
